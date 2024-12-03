@@ -4,6 +4,7 @@ import { formartCurrency } from "./utils/money.js";
 
 
 let productsHTML = '';
+updateCartQuantity();
 
 products.forEach((product) => {
     productsHTML += `
