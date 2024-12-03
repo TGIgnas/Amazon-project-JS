@@ -656,5 +656,21 @@ const products = [
       "apparel",
       "mens"
     ]
+  },
+  {
+    id: "bc2847e9-5323-403f-b7cf-54848asdwde85",
+    image: "images/products/backpack.jpg",
+    name: "Basics Travel Backpack Carry On Flight Approved, Lightweight, Expandable, Dual Use as Backpack or Shoulder Bag, Black",
+    rating: {
+      stars: 4,
+      count: 4258
+    },
+    priceCents: 4393,
+    keywords: [
+      "Travel",
+      "Backpack",
+      "Shoulder Bag"
+
+    ]
   }
 ];
