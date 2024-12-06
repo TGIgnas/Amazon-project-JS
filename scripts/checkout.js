@@ -1,4 +1,4 @@
-import {cart, removeFromCart, calculateCartQuantity, updateQuantity} from "../data/cart.js";
+import {cart, removeFromCart, calculateCartQuantity, updateQuantity, updateDeliveryOption} from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 import {deliveryOptions} from "../data/deliveryOptions.js"
@@ -17,10 +17,26 @@ cart.forEach((cartItem) => {
         }
     });
 
+    const deliveryOptionId = cartItem.deliveryOptionId
+
+    let deliveryOption;
+
+    deliveryOptions.forEach((option) => {
+        if (option.id === deliveryOptionId) {
+            deliveryOption = option;
+        }
+    });
+
+    const today = dayjs();
+    const deliveryDate = today.add(deliveryOption.deliveryDays,
+            'days'
+        );
+    const dateString = deliveryDate.format('dddd, MMMM D');
+
    cartSummaryHTML +=`
     <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
     <div class="delivery-date">
-    Delivery date: Wednesday, June 15
+    Delivery date: ${dateString}
     </div>
 
     <div class="cart-item-details-grid">
@@ -77,7 +93,10 @@ function deliveryOptionsHTMl(matchingProduct, cartItem){
 
         const isChecked = deliveryOption.id ===  cartItem.deliveryOptionId;
 
-        html+=`<div class="delivery-option">
+        html+=`
+        <div class="delivery-option js-delivery-option"
+        data-product-id="${matchingProduct.id}"
+        data-delivery-option-id="${deliveryOption.id}">
         <input type="radio" ${isChecked ? 'checked' : ''}
         class="delivery-option-input"
         name="delivery-option-${matchingProduct.id}">
@@ -161,3 +180,11 @@ document.querySelectorAll('.js-delete-link')
                 updateCartQuantity();
             });
         });
+
+document.querySelectorAll('.js-delivery-option')
+        .forEach((element) => {
+         element.addEventListener('click', () => {
+            const {productId, deliveryOptionId} = element.dataset;
+            updateDeliveryOption(productId, deliveryOptionId);
+         });   
+        }); 
