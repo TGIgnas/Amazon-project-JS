@@ -1,4 +1,4 @@
-import {cart, removeFromCart, calculateCartQuantity, updateQuantity, updateDeliveryOption} from "../../data/cart.js";
+import {cart, removeFromCart, updateQuantity, updateDeliveryOption} from "../../data/cart.js";
 import {products, getProduct} from "../../data/products.js";
 import {formatCurrency} from "../utils/money.js";
 import {deliveryOptions, getDeliveryOption} from "../../data/deliveryOptions.js"
@@ -15,7 +15,7 @@ export function renderOrderSummary() {
 
         const matchingProduct = getProduct(productId);
 
-        const deliveryOptionId = cartItem.deliveryOptionId
+        const deliveryOptionId = cartItem.deliveryOptionId;
 
         let deliveryOption = getDeliveryOption(deliveryOptionId);
 
@@ -23,7 +23,9 @@ export function renderOrderSummary() {
         
 
         cartSummaryHTML += `
-    <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
+    <div class="cart-item-container
+    js-cart-item-container
+    js-cart-item-container-${matchingProduct.id}">
     <div class="delivery-date">
     Delivery date: ${dateString}
     </div>
@@ -39,7 +41,8 @@ export function renderOrderSummary() {
     <div class="product-price">
     $${formatCurrency(matchingProduct.priceCents)}
     </div>
-    <div class="product-quantity">
+    <div class="product-quantity
+    js-product-quantity-${matchingProduct.id}">
     <span>
     Quantity: <span class="quantity-label js-quantity-label-${matchingProduct.id}">${cartItem.quantity}</span>
     </span>
@@ -49,7 +52,8 @@ export function renderOrderSummary() {
     <input type="number" value="${cartItem.quantity}" class="quantity-input js-quantity-input-${matchingProduct.id}">
     <span class="save-quantity-link link-primary js-save-quantity-link"
     data-product-id="${matchingProduct.id}">Save</span>
-    <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingProduct.id}">
+    <span class="delete-quantity-link link-primary js-delete-link 
+    js-delete-link-${matchingProduct.id}" data-product-id="${matchingProduct.id}">
     Delete
     </span>
     </div>
@@ -107,21 +111,15 @@ export function renderOrderSummary() {
                 const productId = link.dataset.productId;
                 removeFromCart(productId);
 
+                const container = document.querySelector(
+                    `.js-cart-item-container-${productId}`
+                  );
+                  container.remove();
+          
                 renderCheckoutHeader();
-                renderOrderSummary();
                 renderPaymentSummary();
             });
         });
-
-    function updateCartQuantity() {
-        const cartQuantity = calculateCartQuantity();
-
-        document.querySelector('.js-return-to-home-link')
-            .innerHTML = `${cartQuantity} items`;
-    }
-
-
-    updateCartQuantity();
 
     document.querySelectorAll('.js-update-link')
         .forEach((link) => {
@@ -161,7 +159,6 @@ export function renderOrderSummary() {
                     return quantatyLabel.innerHTML = 1;
                 }
                 renderCheckoutHeader();
-                updateCartQuantity();
                 renderPaymentSummary();
             });
         });
