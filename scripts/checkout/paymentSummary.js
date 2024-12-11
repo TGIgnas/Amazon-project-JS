@@ -34,13 +34,14 @@ const paymentSummaryHTML = `
 
     <div class="payment-summary-row">
     <div>Shipping &amp; handling:</div>
-    <div class="payment-summary-money">
+    <div class="payment-summary-money js-payment-summary-money">
     $${formatCurrency(shippingPriceCents)}</div>
     </div>
 
     <div class="payment-summary-row subtotal-row">
     <div>Total before tax:</div>
-    <div class="payment-summary-money">
+    <div class="payment-summary-money
+    js-payment-summary-money-total">
     $${formatCurrency(totalBeforeTaxCents)}</div>
     </div>
 
