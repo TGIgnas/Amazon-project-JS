@@ -87,8 +87,8 @@
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 
-  display: grid;
-  grid-template-columns: 110px 1fr 220px;
+  display: grid; 
+  grid-template-columns: 110px 1fr;
   column-gap: 35px;
   row-gap: 60px;
   align-items: center;
@@ -150,12 +150,6 @@
   align-self: start;
 }
 
-.track-package-button {
-  width: 100%;
-  font-size: 15px;
-  padding: 8px;
-}
-
 @media (max-width: 800px) {
   .buy-again-button {
     margin-bottom: 10px;
@@ -164,10 +158,6 @@
   .product-actions {
     grid-column: 2;
     margin-bottom: 30px;
-  }
-
-  .track-package-button {
-    width: 140px;
   }
 }
 
@@ -200,8 +190,4 @@
     margin-bottom: 70px;
   }
 
-  .track-package-button {
-    width: 100%;
-    padding: 12px;
-  }
 }

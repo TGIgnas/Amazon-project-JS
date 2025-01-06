@@ -140,19 +140,14 @@ export function renderOrderSummary() {
             link.addEventListener('click', () => {
 
                 const productId = link.dataset.productId;
-
                 const container = document.querySelector(`.js-cart-item-container-${productId}`);
-
                 container.classList.remove('is-editing-quantity');
-
                 const quantityValue = document.querySelector(`.js-quantity-input-${productId}`);
-
                 let newQuantity = Number(quantityValue.value);
 
                 updateQuantity(productId, newQuantity);
 
                 const quantatyLabel = document.querySelector(`.js-quantity-label-${productId}`);
-
                 quantatyLabel.innerHTML = newQuantity;
 
                 if (newQuantity <= 0 || newQuantity >= 1000) {
