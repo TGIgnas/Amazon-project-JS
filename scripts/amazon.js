@@ -1,40 +1,41 @@
-import {cart, addToCart,calculateCartQuantity} from "../data/cart.js";
-import {products, loadProducts} from "../data/products.js";
+import { cart, addToCart, calculateCartQuantity } from "../data/cart.js";
+import { products, loadProducts } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
+
+function searchProducts(query) {
+  const lowerCaseQuery = query.toLowerCase();
+  const results = products.filter((product) => {
+    return product.name.toLowerCase().includes(lowerCaseQuery);
+  });
+  return results;
+}
 
 loadProducts(renderProductsGrid);
 
 function renderProductsGrid() {
+  let productsHTML = "";
+  updateCartQuantity();
 
-    let productsHTML = '';
-    updateCartQuantity();
-
-    products.forEach((product) => {
-        productsHTML += `
-        <div class="product-container">
+  products.forEach((product) => {
+    productsHTML += `
+      <div class="product-container">
         <div class="product-image-container">
-        <img class="product-image"
-            src="${product.image}">
+          <img class="product-image" src="${product.image}">
         </div>
-
         <div class="product-name limit-text-to-2-lines">
-        ${product.name}
+          ${product.name}
         </div>
-
         <div class="product-rating-container">
-        <img class="product-rating-stars"
-            src="${product.getStarsUrl()}">
-        <div class="product-rating-count link-primary">
+          <img class="product-rating-stars" src="${product.getStarsUrl()}">
+          <div class="product-rating-count link-primary">
             ${product.rating.count}
+          </div>
         </div>
-        </div>
-
         <div class="product-price">
-        ${product.getPrice()}
+          ${product.getPrice()}
         </div>
-    
         <div class="product-quantity-container">
-        <select class= 'js-quantity-selector-${product.id}'>
+          <select class='js-quantity-selector-${product.id}'>
             <option selected value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -45,62 +46,135 @@ function renderProductsGrid() {
             <option value="8">8</option>
             <option value="9">9</option>
             <option value="10">10</option>
-        </select>
+          </select>
         </div>
-
         ${product.extraInfoHTML()}
-
         <div class="product-spacer"></div>
-
         <div class="added-to-cart js-added-tag-${product.id}">
+          <img src="images/icons/checkmark.png">
+          Added
+        </div>
+        <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id="${
+          product.id
+        }">
+          Add to Cart
+        </button>
+      </div>
+    `;
+  });
+
+  document.querySelector(".js-products-grid").innerHTML = productsHTML;
+
+  document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+    button.addEventListener("click", () => {
+      const { productId } = button.dataset;
+      addToCart(productId);
+      updateCartQuantity();
+      toCartConfirmationMessage(productId);
+    });
+  });
+}
+
+function displaySearchResults(results) {
+  const productContainer = document.querySelector(".js-products-grid");
+  productContainer.innerHTML = "";
+
+  if (results.length === 0) {
+    productContainer.innerHTML = "<p>No products found.</p>";
+    return;
+  }
+
+  results.forEach((product) => {
+    const productElement = document.createElement("div");
+    productElement.classList.add("product-container");
+    productElement.innerHTML = `
+      <div class="product-image-container">
+        <img class="product-image" src="${product.image}">
+      </div>
+      <div class="product-name limit-text-to-2-lines">
+        ${product.name}
+      </div>
+      <div class="product-rating-container">
+        <img class="product-rating-stars" src="${product.getStarsUrl()}">
+        <div class="product-rating-count link-primary">
+          ${product.rating.count}
+        </div>
+      </div>
+      <div class="product-price">
+        ${product.getPrice()}
+      </div>
+      <div class="product-quantity-container">
+        <select class='js-quantity-selector-${product.id}'>
+          <option selected value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      ${product.extraInfoHTML()}
+      <div class="product-spacer"></div>
+      <div class="added-to-cart js-added-tag-${product.id}">
         <img src="images/icons/checkmark.png">
         Added
-        </div>
-
-        <button class="add-to-cart-button button-primary js-add-to-cart"
-        data-product-id="${product.id}">
+      </div>
+      <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id="${
+        product.id
+      }">
         Add to Cart
-        </button>
-        </div>
-        `;
-    })
+      </button>
+    `;
+    productContainer.appendChild(productElement);
+  });
 
-    document.querySelector('.js-products-grid')
-        .innerHTML = productsHTML;
+  document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+    button.addEventListener("click", () => {
+      const { productId } = button.dataset;
+      addToCart(productId);
+      updateCartQuantity();
+      toCartConfirmationMessage(productId);
+    });
+  });
+}
 
-        const addedMessageTimeouts = {};
+document.getElementById("searchButton").addEventListener("click", () => {
+  const query = document.getElementById("searchInput").value;
+  const searchResults = searchProducts(query);
+  displaySearchResults(searchResults);
+});
 
-    function updateCartQuantity() {
-        const cartQuantity = calculateCartQuantity();
+document.getElementById("searchInput").addEventListener("keyup", (event) => {
+  if (event.key === "Enter") {
+    const query = document.getElementById("searchInput").value;
+    const searchResults = searchProducts(query);
+    displaySearchResults(searchResults);
+  }
+});
 
-        document.querySelector('.js-cart-quantity')
-            .innerHTML = cartQuantity;
-    }
+const addedMessageTimeouts = {};
 
-    function toCartConfirmationMessage(productId) {
-        const addedTag = document.querySelector(`.js-added-tag-${productId}`);
+function updateCartQuantity() {
+  const cartQuantity = calculateCartQuantity();
+  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+}
 
-        addedTag.classList.add('added-tag-visible');
-        
-        const previousTimeoutId = addedMessageTimeouts[productId];
-            if(previousTimeoutId){
-                clearTimeout(previousTimeoutId);
-            }
+function toCartConfirmationMessage(productId) {
+  const addedTag = document.querySelector(`.js-added-tag-${productId}`);
+  addedTag.classList.add("added-tag-visible");
 
-        const timeoutId = setTimeout(() => {
-            addedTag.classList.remove('added-tag-visible');
-        }, 2000);
+  const previousTimeoutId = addedMessageTimeouts[productId];
+  if (previousTimeoutId) {
+    clearTimeout(previousTimeoutId);
+  }
 
-        addedMessageTimeouts[productId] = timeoutId;
-    }
+  const timeoutId = setTimeout(() => {
+    addedTag.classList.remove("added-tag-visible");
+  }, 2000);
 
-    document.querySelectorAll('.js-add-to-cart')
-        .forEach((button) => {
-            button.addEventListener('click', () => {
-                const {productId} = button.dataset;
-                addToCart(productId);
-                updateCartQuantity();
-                toCartConfirmationMessage(productId);
-                });   
-            });
+  addedMessageTimeouts[productId] = timeoutId;
 }
